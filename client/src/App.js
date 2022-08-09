@@ -1,23 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
 
 function App() {
+  const [roundState, setRoundState] = useState([]);
+  useEffect(() => {
+    const socket = io("http://localhost:3002/");
+    socket.on("connect", () => console.log(socket.connected));
+    socket.emit("start");
+    socket.on("ticker", function (round) {
+      setRoundState(round);
+    });
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React.
-        </a>
-      </header>
+      {roundState.map((step) => (
+        <div>{step.distance}</div>
+      ))}
     </div>
   );
 }
